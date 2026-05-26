@@ -171,6 +171,31 @@ def test_standard_scaler_sample_weight(Xw, X, sample_weight, array_constructor):
     assert_almost_equal(scaler.transform(X_test), scaler_w.transform(X_test))
 
 
+def test_gh_34082_orig():
+    from skimage.feature import local_binary_pattern
+    from tqdm import tqdm
+    from sklearn.datasets import fetch_openml
+
+    dataset = fetch_openml("Fashion-MNIST")
+    X, y = dataset.data, dataset.target
+    y = y.astype(np.int8)
+    images = X.to_numpy().reshape(-1, 28, 28)
+    radius = 2
+    n_points = 8 * radius
+    n_bins = n_points + 2
+
+
+    hog_features = []
+    i = 0
+    image = images[135]
+    LBP = local_binary_pattern(image,
+                               P=n_points,
+                               R=radius,
+                               method="uniform")
+    print(LBP[-8])
+
+
+
 @pytest.mark.parametrize(["Xw", "X", "sample_weight"], _yield_xw_x_sampleweight())
 @pytest.mark.parametrize(
     "namespace, device_name, dtype_name",
